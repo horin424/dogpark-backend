@@ -1,13 +1,19 @@
 "use client";
 import Link from "next/link";
+<<<<<<< HEAD
 import { useCallback, useEffect, useState } from "react";
 import { getCurrentUserId, getUnreadCount } from "@/lib/storage";
 import { usePolling } from "@/lib/hooks";
+=======
+import { useEffect, useState } from "react";
+import { getCurrentUserId, getUnreadCount } from "@/lib/storage";
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
 
 export default function Header() {
     const [userId, setUserId] = useState<string | null>(null);
     const [unread, setUnread] = useState(0);
 
+<<<<<<< HEAD
     const refresh = useCallback(async () => {
         const id = getCurrentUserId();
         setUserId(id);
@@ -29,6 +35,14 @@ export default function Header() {
 
     usePolling(refresh, 30000);
 
+=======
+    useEffect(() => {
+        const id = getCurrentUserId();
+        setUserId(id);
+        if (id) setUnread(getUnreadCount(id));
+    }, []);
+
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
     return (
         <header className="sticky top-0 z-50 bg-white border-b border-amber-100 shadow-sm">
             <div className="max-w-lg mx-auto px-4 h-14 flex items-center justify-between">

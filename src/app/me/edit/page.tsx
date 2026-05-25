@@ -3,16 +3,27 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
     getCurrentUserId,
+<<<<<<< HEAD
     getCurrentUser,
     saveUserDogs,
     saveUserDisplayName,
     updateProfile,
     uploadDogPhoto,
+=======
+    getUsers,
+    saveUsers,
+    getCurrentUser,
+    getProfileByFriendCode,
+    updateProfile,
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
 } from "@/lib/storage";
 
 import { Dog, DogSize, User } from "@/types";
 import { useToast } from "@/components/Toast";
+<<<<<<< HEAD
 import { BREED_OPTIONS, BREED_OTHER, isCuratedBreed } from "@/data/breeds";
+=======
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
 
 const SIZE_OPTIONS: { value: DogSize; label: string }[] = [
     { value: "small", label: "小型 (〜10kg)" },
@@ -42,6 +53,7 @@ export default function EditProfilePage() {
     const router = useRouter();
     const { showToast, ToastElement } = useToast();
     const [user, setUser] = useState<User | null>(null);
+<<<<<<< HEAD
     const [displayName, setDisplayName] = useState("");
     const [dogs, setDogs] = useState<Dog[]>([]);
     const [customTag, setCustomTag] = useState("");
@@ -71,6 +83,30 @@ export default function EditProfilePage() {
         };
     }, [router]);
 
+=======
+    const [dogs, setDogs] = useState<Dog[]>([]);
+
+    useEffect(() => {
+        const uid = getCurrentUserId();
+        if (!uid) {
+            router.replace("/login?next=/me/edit");
+            return;
+        }
+        const u = getCurrentUser();
+        if (u) {
+            setUser(u);
+            const profiles = getProfileByFriendCode(u.friendCode);
+            setDogs(u.dogs.length > 0 ? u.dogs : [newDog()]);
+            if (profiles) {
+                setCustomTag(""); // Reset custom tag state
+            }
+        }
+    }, [router]);
+
+    const [customTag, setCustomTag] = useState("");
+
+
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
     const updateDog = <K extends keyof Dog>(idx: number, key: K, val: Dog[K]) => {
         setDogs((prev) => prev.map((d, i) => (i === idx ? { ...d, [key]: val } : d)));
     };
@@ -88,6 +124,7 @@ export default function EditProfilePage() {
                     ? d.tags.filter((t) => t !== tag)
                     : [...d.tags, tag];
                 return { ...d, tags };
+<<<<<<< HEAD
             }),
         );
     };
@@ -115,6 +152,27 @@ export default function EditProfilePage() {
         } finally {
             setUploadingIdx(null);
         }
+=======
+            })
+        );
+    };
+
+    const handlePhotoUpload = (idx: number, e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (file.size > 1024 * 1024) { // 1MB limit for localStorage
+            showToast("画像サイズは1MB未満にしてください");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (upload) => {
+            const dataUrl = upload.target?.result as string;
+            updateDog(idx, "photoUrl", dataUrl);
+        };
+        reader.readAsDataURL(file);
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
     };
 
     const addCustomTag = (idx: number) => {
@@ -137,6 +195,7 @@ export default function EditProfilePage() {
     const removeDog = (idx: number) =>
         setDogs((prev) => prev.filter((_, i) => i !== idx));
 
+<<<<<<< HEAD
     const handleSave = async () => {
         if (!user || saving) return;
         const trimmedName = displayName.trim();
@@ -144,11 +203,16 @@ export default function EditProfilePage() {
             showToast("ニックネームを入力してください");
             return;
         }
+=======
+    const handleSave = () => {
+        if (!user) return;
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
         const invalid = dogs.find((d) => !d.name.trim());
         if (invalid) {
             showToast("犬の名前を入力してください");
             return;
         }
+<<<<<<< HEAD
         setSaving(true);
         try {
             await Promise.all([
@@ -171,6 +235,26 @@ export default function EditProfilePage() {
         } finally {
             setSaving(false);
         }
+=======
+        const users = getUsers();
+        const updated = users.map((u) =>
+            u.id === user.id ? { ...u, dogs } : u
+        );
+        saveUsers(updated);
+
+        // Also update central profile (main dog)
+        if (dogs.length > 0) {
+            updateProfile(user.friendCode, {
+                dogName: dogs[0].name,
+                photoDataUrl: dogs[0].photoUrl,
+                tags: dogs[0].tags,
+                avatarEmoji: dogs[0].avatarEmoji,
+            });
+        }
+
+        showToast("✅ 保存しました");
+        setTimeout(() => router.push("/me"), 800);
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
     };
 
 
@@ -181,6 +265,7 @@ export default function EditProfilePage() {
             {ToastElement}
             <h1 className="text-xl font-bold text-gray-800">🐾 プロフィール編集</h1>
 
+<<<<<<< HEAD
             {/* User profile */}
             <div className="bg-white rounded-2xl p-5 border border-amber-100 shadow-sm flex flex-col gap-3">
                 <h2 className="font-bold text-gray-700 text-sm">あなたのプロフィール</h2>
@@ -201,6 +286,8 @@ export default function EditProfilePage() {
                 </div>
             </div>
 
+=======
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
             {dogs.map((dog, idx) => (
                 <div key={dog.id} className="bg-white rounded-2xl p-5 border border-amber-100 shadow-sm flex flex-col gap-4">
                     <div className="flex items-center justify-between">
@@ -232,6 +319,7 @@ export default function EditProfilePage() {
                             <input
                                 type="file"
                                 accept="image/*"
+<<<<<<< HEAD
                                 disabled={uploadingIdx === idx}
                                 onChange={(e) => handlePhotoUpload(idx, e)}
                                 className="text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100 disabled:opacity-50"
@@ -242,6 +330,13 @@ export default function EditProfilePage() {
                                 ? "アップロード中…"
                                 : "※ 写真をアップロードすると、絵文字より優先して表示されます。"}
                         </p>
+=======
+                                onChange={(e) => handlePhotoUpload(idx, e)}
+                                className="text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100"
+                            />
+                        </div>
+                        <p className="text-[10px] text-gray-400 mt-2">※ 写真をアップロードすると、絵文字より優先して表示されます。</p>
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
                     </div>
 
                     {/* Emoji picker (if no photo) */}
@@ -276,10 +371,22 @@ export default function EditProfilePage() {
                     </div>
 
                     {/* Breed */}
+<<<<<<< HEAD
                     <BreedPicker
                         breed={dog.breed ?? ""}
                         onChange={(val) => updateDog(idx, "breed", val)}
                     />
+=======
+                    <div>
+                        <label className="text-xs font-semibold text-gray-500 mb-1 block">犬種（任意）</label>
+                        <input
+                            value={dog.breed ?? ""}
+                            onChange={(e) => updateDog(idx, "breed", e.target.value)}
+                            placeholder="例: トイプードル"
+                            className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm"
+                        />
+                    </div>
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
 
                     {/* Size */}
                     <div>
@@ -359,14 +466,21 @@ export default function EditProfilePage() {
 
             <button
                 onClick={handleSave}
+<<<<<<< HEAD
                 disabled={saving}
                 className="w-full bg-amber-500 text-white py-4 rounded-2xl font-bold text-base shadow-sm hover:bg-amber-600 transition-colors disabled:opacity-50"
             >
                 {saving ? "保存中…" : "保存する"}
+=======
+                className="w-full bg-amber-500 text-white py-4 rounded-2xl font-bold text-base shadow-sm hover:bg-amber-600 transition-colors"
+            >
+                保存する
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
             </button>
         </div>
     );
 }
+<<<<<<< HEAD
 
 // Breed picker: a select with the curated list, plus an "その他" option that
 // reveals a free-text field. `otherMode` is local because picking "その他"
@@ -429,3 +543,5 @@ function BreedPicker({
         </div>
     );
 }
+=======
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde

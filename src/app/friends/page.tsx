@@ -7,21 +7,31 @@ import {
     addFriendRequest,
     updateFriendRequest,
     getUsers,
+<<<<<<< HEAD
+=======
+    saveFriendRequests,
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
     getFriendIds,
     getUserById,
     addNotification,
     generateId,
+<<<<<<< HEAD
     preloadProfiles,
     getCachedFriendIds,
     setCachedFriendIds,
     getCachedFriendRequests,
     setCachedFriendRequests,
+=======
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
 } from "@/lib/storage";
 import { FriendRequest, User } from "@/types";
 import { useToast } from "@/components/Toast";
 import EmptyState from "@/components/EmptyState";
 import DogAvatar from "@/components/DogAvatar";
+<<<<<<< HEAD
 import { SkeletonList } from "@/components/Skeleton";
+=======
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
 
 
 export default function FriendsPage() {
@@ -36,16 +46,22 @@ export default function FriendsPage() {
     const [showAddModal, setShowAddModal] = useState(false);
     const [inputCode, setInputCode] = useState("");
     const [copied, setCopied] = useState(false);
+<<<<<<< HEAD
     const [submitting, setSubmitting] = useState(false);
     const [loaded, setLoaded] = useState(false);
 
     const load = useCallback(async () => {
+=======
+
+    const load = useCallback(() => {
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
         const uid = getCurrentUserId();
         if (!uid) {
             router.replace("/login?next=/friends");
             return;
         }
         setCurrentUserId(uid);
+<<<<<<< HEAD
 
         const cachedIds = getCachedFriendIds(uid);
         const cachedReqs = getCachedFriendRequests(uid);
@@ -78,12 +94,25 @@ export default function FriendsPage() {
         } finally {
             setLoaded(true);
         }
+=======
+        const users = getUsers();
+        setCurrentUser(users.find((u) => u.id === uid) ?? null);
+        setFriendIds(getFriendIds(uid));
+        const reqs = getFriendRequests();
+        setIncomingReqs(
+            reqs.filter((r) => r.toId === uid && r.status === "pending")
+        );
+        setOutgoingReqs(
+            reqs.filter((r) => r.fromId === uid && r.status === "pending")
+        );
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
     }, [router]);
 
     useEffect(() => {
         load();
     }, [load]);
 
+<<<<<<< HEAD
     const handleSendRequest = async () => {
         if (!currentUserId || !inputCode.trim() || submitting) return;
         setSubmitting(true);
@@ -164,6 +193,69 @@ export default function FriendsPage() {
             console.error(err);
             showToast("拒否に失敗しました");
         }
+=======
+    const handleSendRequest = () => {
+        if (!currentUserId || !inputCode.trim()) return;
+        const users = getUsers();
+        const target = users.find(
+            (u) => u.friendCode.toLowerCase() === inputCode.trim().toLowerCase()
+        );
+        if (!target) {
+            showToast("❌ 友達コードが見つかりません");
+            return;
+        }
+        if (target.id === currentUserId) {
+            showToast("自分自身には送れません");
+            return;
+        }
+        if (friendIds.includes(target.id)) {
+            showToast("すでにフレンドです");
+            return;
+        }
+        const req: FriendRequest = {
+            id: generateId(),
+            fromId: currentUserId,
+            toId: target.id,
+            status: "pending",
+            createdAt: new Date().toISOString(),
+        };
+        addFriendRequest(req);
+        addNotification({
+            id: generateId(),
+            userId: target.id,
+            type: "friend_request",
+            title: "フレンド申請が届きました",
+            body: `${currentUser?.displayName} からフレンド申請が届いています`,
+            isRead: false,
+            createdAt: new Date().toISOString(),
+        });
+        showToast("✉️ 申請を送信しました");
+        setInputCode("");
+        setShowAddModal(false);
+        load();
+    };
+
+    const handleAccept = (req: FriendRequest) => {
+        updateFriendRequest({ ...req, status: "accepted" });
+        const me = getUserById(currentUserId!);
+        const them = getUserById(req.fromId);
+        addNotification({
+            id: generateId(),
+            userId: req.fromId,
+            type: "friend_accepted",
+            title: "フレンド申請が承認されました",
+            body: `${me?.displayName} とフレンドになりました！`,
+            isRead: false,
+            createdAt: new Date().toISOString(),
+        });
+        showToast(`🐶 ${them?.dogs[0]?.name} とフレンドになりました！`);
+        load();
+    };
+
+    const handleReject = (req: FriendRequest) => {
+        updateFriendRequest({ ...req, status: "rejected" });
+        load();
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
     };
 
     const copyCode = () => {
@@ -174,6 +266,7 @@ export default function FriendsPage() {
         });
     };
 
+<<<<<<< HEAD
     if (!currentUserId && !loaded) {
         return (
             <div className="py-5 flex flex-col gap-5">
@@ -183,6 +276,9 @@ export default function FriendsPage() {
             </div>
         );
     }
+=======
+    if (!currentUserId) return null;
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
 
     return (
         <div className="py-5 flex flex-col gap-5">
@@ -344,10 +440,16 @@ export default function FriendsPage() {
                         />
                         <button
                             onClick={handleSendRequest}
+<<<<<<< HEAD
                             disabled={submitting}
                             className="w-full bg-amber-500 text-white py-3 rounded-xl font-bold text-sm hover:bg-amber-600 transition-colors disabled:opacity-50"
                         >
                             {submitting ? "送信中…" : "申請を送る"}
+=======
+                            className="w-full bg-amber-500 text-white py-3 rounded-xl font-bold text-sm hover:bg-amber-600 transition-colors"
+                        >
+                            申請を送る
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
                         </button>
                         <button
                             onClick={() => setShowAddModal(false)}

@@ -7,6 +7,7 @@ import {
     getCurrentUser,
     logout,
     getActivePlans,
+<<<<<<< HEAD
     fetchProfileByFriendCode,
     timeSlotLabel,
     timeSlotEmoji,
@@ -14,28 +15,44 @@ import {
     DogProfile,
     getCachedActivePlans,
     setCachedActivePlans,
+=======
+    todayString,
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
 } from "@/lib/storage";
 import { User, Plan } from "@/types";
 import { MOCK_PARKS } from "@/data/mockData";
 import EmptyState from "@/components/EmptyState";
+<<<<<<< HEAD
 import DogAvatar from "@/components/DogAvatar";
 import { SkeletonCard, SkeletonList } from "@/components/Skeleton";
+=======
+import { timeSlotLabel, timeSlotEmoji, statusLabel, getProfileByFriendCode } from "@/lib/storage";
+import DogAvatar from "@/components/DogAvatar";
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
 
 
 export default function MePage() {
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
+<<<<<<< HEAD
     const [profile, setProfile] = useState<DogProfile | null>(null);
     const [myPlans, setMyPlans] = useState<Plan[]>([]);
     const [joinedPlans, setJoinedPlans] = useState<Plan[]>([]);
     const [loaded, setLoaded] = useState(false);
 
     const load = useCallback(async () => {
+=======
+    const [myPlans, setMyPlans] = useState<Plan[]>([]);
+    const [joinedPlans, setJoinedPlans] = useState<Plan[]>([]);
+
+    const load = useCallback(() => {
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
         const uid = getCurrentUserId();
         if (!uid) {
             router.replace("/login?next=/me");
             return;
         }
+<<<<<<< HEAD
 
         const cachedPlans = getCachedActivePlans();
         if (cachedPlans) {
@@ -69,6 +86,15 @@ export default function MePage() {
         } finally {
             setLoaded(true);
         }
+=======
+        const u = getCurrentUser();
+        setUser(u);
+        const active = getActivePlans();
+        setMyPlans(active.filter((p) => p.creatorId === uid));
+        setJoinedPlans(
+            active.filter((p) => p.participantIds.includes(uid) && p.creatorId !== uid)
+        );
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
     }, [router]);
 
     useEffect(() => {
@@ -80,6 +106,7 @@ export default function MePage() {
         router.replace("/");
     };
 
+<<<<<<< HEAD
     if (!user) {
         if (!loaded) {
             return (
@@ -93,6 +120,9 @@ export default function MePage() {
         }
         return null;
     }
+=======
+    if (!user) return null;
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
 
     return (
         <div className="py-5 flex flex-col gap-6">
@@ -108,20 +138,32 @@ export default function MePage() {
                     </Link>
                 </div>
                 <div className="flex flex-col gap-3">
+<<<<<<< HEAD
                     {user.dogs.map((dog, idx) => (
+=======
+                    {user.dogs.map((dog) => (
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
                         <Link key={dog.id} href="/me/edit">
                             <div className="bg-white rounded-2xl p-4 border border-amber-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
                                 <DogAvatar friendCode={user.friendCode} size="xl" />
                                 <div className="flex-1">
                                     <p className="font-bold text-gray-800">
+<<<<<<< HEAD
                                         {(idx === 0 && profile?.dogName) || dog.name}
+=======
+                                        {getProfileByFriendCode(user.friendCode)?.dogName || dog.name}
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
                                     </p>
                                     <p className="text-xs text-gray-400 mt-0.5">
                                         {dog.breed ?? "犬種未設定"} ·{" "}
                                         {dog.size === "small" ? "小型" : dog.size === "medium" ? "中型" : "大型"}
                                     </p>
                                     <div className="flex flex-wrap gap-1 mt-2">
+<<<<<<< HEAD
                                         {((idx === 0 && profile?.tags) || dog.tags).map((tag) => (
+=======
+                                        {(getProfileByFriendCode(user.friendCode)?.tags || dog.tags).map((tag) => (
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
                                             <span
                                                 key={tag}
                                                 className="bg-amber-50 text-amber-700 text-xs px-2 py-0.5 rounded-full border border-amber-100"
@@ -147,6 +189,7 @@ export default function MePage() {
 
             {/* My plans */}
             <section>
+<<<<<<< HEAD
                 <div className="flex items-center justify-between mb-3">
                     <h2 className="font-bold text-gray-700 text-base">📅 自分の予定</h2>
                     <Link
@@ -156,6 +199,9 @@ export default function MePage() {
                         ＋ 予定を追加
                     </Link>
                 </div>
+=======
+                <h2 className="font-bold text-gray-700 text-base mb-3">📅 自分の予定</h2>
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
                 {myPlans.length === 0 ? (
                     <EmptyState
                         emoji="📭"

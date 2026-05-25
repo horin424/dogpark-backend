@@ -1,10 +1,15 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+<<<<<<< HEAD
+=======
+import Link from "next/link";
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
 import {
     getCurrentUserId,
     getNotifications,
     markNotificationRead,
+<<<<<<< HEAD
     getCachedNotifications,
     setCachedNotifications,
 } from "@/lib/storage";
@@ -12,18 +17,30 @@ import { usePolling } from "@/lib/hooks";
 import { Notification } from "@/types";
 import EmptyState from "@/components/EmptyState";
 import { SkeletonList } from "@/components/Skeleton";
+=======
+} from "@/lib/storage";
+import { Notification } from "@/types";
+import EmptyState from "@/components/EmptyState";
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
 
 export default function NotificationsPage() {
     const router = useRouter();
     const [notifications, setNotifications] = useState<Notification[]>([]);
+<<<<<<< HEAD
     const [loaded, setLoaded] = useState(false);
 
     const load = useCallback(async () => {
+=======
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+    const load = useCallback(() => {
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
         const uid = getCurrentUserId();
         if (!uid) {
             router.replace("/login?next=/notifications");
             return;
         }
+<<<<<<< HEAD
         const cached = getCachedNotifications(uid);
         if (cached) {
             setNotifications(cached);
@@ -38,12 +55,21 @@ export default function NotificationsPage() {
         } finally {
             setLoaded(true);
         }
+=======
+        setCurrentUserId(uid);
+        setNotifications(
+            getNotifications()
+                .filter((n) => n.userId === uid)
+                .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        );
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
     }, [router]);
 
     useEffect(() => {
         load();
     }, [load]);
 
+<<<<<<< HEAD
     usePolling(load, 20000);
 
     const handleTap = async (notif: Notification) => {
@@ -55,6 +81,13 @@ export default function NotificationsPage() {
         if (notif.planId) router.push(`/plans/${notif.planId}`);
         else if (notif.type === "friend_accepted" || notif.type === "friend_request") router.push("/friends");
         else load();
+=======
+    const handleTap = (notif: Notification) => {
+        markNotificationRead(notif.id);
+        load();
+        if (notif.planId) router.push(`/plans/${notif.planId}`);
+        else if (notif.type === "friend_accepted" || notif.type === "friend_request") router.push("/friends");
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
     };
 
     const typeEmoji = (type: Notification["type"]) => {
@@ -67,12 +100,21 @@ export default function NotificationsPage() {
         }
     };
 
+<<<<<<< HEAD
     return (
         <div className="py-5 flex flex-col gap-4">
             <h1 className="text-xl font-bold text-gray-800">🔔 通知</h1>
             {!loaded ? (
                 <SkeletonList count={4} />
             ) : notifications.length === 0 ? (
+=======
+    if (!currentUserId) return null;
+
+    return (
+        <div className="py-5 flex flex-col gap-4">
+            <h1 className="text-xl font-bold text-gray-800">🔔 通知</h1>
+            {notifications.length === 0 ? (
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
                 <EmptyState emoji="🔕" title="通知はありません" />
             ) : (
                 <div className="flex flex-col gap-2">

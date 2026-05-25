@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+<<<<<<< HEAD
 import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { MOCK_PARKS } from "@/data/mockData";
@@ -76,6 +77,23 @@ export default function ParkDetailPage() {
             canceled = true;
         };
     }, [parkId, selectedDate]);
+=======
+import { useParams } from "next/navigation";
+import Link from "next/link";
+import { MOCK_PARKS } from "@/data/mockData";
+import { getTodayPlans, getUserById } from "@/lib/storage";
+import { Plan } from "@/types";
+
+export default function ParkDetailPage() {
+    const params = useParams();
+    const parkId = params?.parkId as string;
+    const park = MOCK_PARKS.find((p) => p.id === parkId);
+    const [todayPlans, setTodayPlans] = useState<Plan[]>([]);
+
+    useEffect(() => {
+        setTodayPlans(getTodayPlans().filter((p) => p.parkId === parkId));
+    }, [parkId]);
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
 
     if (!park) {
         return (
@@ -83,6 +101,7 @@ export default function ParkDetailPage() {
         );
     }
 
+<<<<<<< HEAD
     const isToday = selectedDate === todayString();
     const dateLabel = isToday ? "今日" : formatDateLabel(selectedDate);
     const confirmed = plansForDate.filter((p) => p.status === "confirmed");
@@ -90,6 +109,11 @@ export default function ParkDetailPage() {
     const anonymousCount = 0;
 
     const dogStats = aggregateDogs(plansForDate);
+=======
+    const confirmed = todayPlans.filter((p) => p.status === "confirmed");
+    const tentative = todayPlans.filter((p) => p.status === "tentative");
+    const anonymousCount = Math.floor(Math.random() * 4);
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
 
     return (
         <div className="py-5 flex flex-col gap-6">
@@ -98,12 +122,17 @@ export default function ParkDetailPage() {
                 <div className="text-6xl mb-3">{park.imageEmoji}</div>
                 <h1 className="text-xl font-bold text-gray-800">{park.name}</h1>
                 <p className="text-sm text-gray-400 mt-1">{park.address}</p>
+<<<<<<< HEAD
+=======
+                <p className="text-sm text-amber-600 mt-1">📍 {park.distanceKm}km</p>
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
             </div>
 
             {/* 基本情報 */}
             <section className="bg-white rounded-2xl p-4 border border-amber-100 shadow-sm">
                 <h2 className="font-bold text-gray-700 text-sm mb-3">📋 基本情報</h2>
                 <dl className="flex flex-col gap-2 text-sm">
+<<<<<<< HEAD
                     {park.area && <InfoRow label="エリア" value={park.area} />}
                     {park.type && <InfoRow label="形態" value={dogRunTypeLabel(park.type)} />}
                     {park.areaSize && <InfoRow label="広さ" value={areaSizeLabel(park.areaSize)} />}
@@ -149,6 +178,19 @@ export default function ParkDetailPage() {
                         )}
                     </label>
                 </div>
+=======
+                    <InfoRow label="営業時間" value={`${park.openTime} 〜 ${park.closeTime}`} />
+                    <InfoRow label="料金" value={park.fee} />
+                    <InfoRow label="駐車場" value={park.hasParkingLot ? "あり" : "なし"} />
+                    <InfoRow label="証明書" value={park.requiresCertificate ? "要・接種証明" : "不要"} />
+                    <InfoRow label="注意点" value={park.notes} />
+                </dl>
+            </section>
+
+            {/* 今日の予定 */}
+            <section>
+                <h2 className="font-bold text-gray-700 text-sm mb-3">📅 今日の予定</h2>
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
                 <div className="flex gap-2 flex-wrap mb-3">
                     {confirmed.length > 0 && (
                         <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-medium">
@@ -165,6 +207,7 @@ export default function ParkDetailPage() {
                             匿名 {anonymousCount}
                         </span>
                     )}
+<<<<<<< HEAD
                     {loaded && confirmed.length === 0 && tentative.length === 0 && anonymousCount === 0 && (
                         <span className="text-gray-400 text-sm">{dateLabel}の予定はまだありません</span>
                     )}
@@ -223,6 +266,15 @@ export default function ParkDetailPage() {
                 {/* Plan list */}
                 <div className="flex flex-col gap-2">
                     {plansForDate.map((plan) => {
+=======
+                    {confirmed.length === 0 && tentative.length === 0 && anonymousCount === 0 && (
+                        <span className="text-gray-400 text-sm">今日の予定はまだありません</span>
+                    )}
+                </div>
+                {/* Plan list */}
+                <div className="flex flex-col gap-2">
+                    {todayPlans.map((plan) => {
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
                         const creator = getUserById(plan.creatorId);
                         return (
                             <Link key={plan.id} href={`/plans/${plan.id}`}>
@@ -267,6 +319,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
         </div>
     );
 }
+<<<<<<< HEAD
 
 function SizePill({ label, count }: { label: string; count: number }) {
     const isZero = count === 0;
@@ -337,3 +390,5 @@ function aggregateDogs(plans: Plan[]): DogStats {
 
     return { total, size: sizeCounts, breeds, tags };
 }
+=======
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde

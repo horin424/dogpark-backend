@@ -17,6 +17,7 @@ export interface Dog {
 export interface User {
   id: string;
   displayName: string;
+<<<<<<< HEAD
   accountId: string; // user-defined login ID
   friendCode: string; // auto-generated, internal
   pin?: string; // legacy 4-digit PIN (kept for seed back-compat)
@@ -27,10 +28,18 @@ export interface User {
 export type DogRunType = "indoor" | "outdoor" | "both";
 export type DogRunAreaSize = "S" | "M" | "L";
 
+=======
+  friendCode: string;
+  pin?: string; // 4-digit PIN for login
+  dogs: Dog[];
+}
+
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
 export interface Park {
   id: string;
   name: string;
   address: string;
+<<<<<<< HEAD
   imageEmoji: string;
 
   // Pre-shared facility data (dogrun_data.csv)
@@ -68,6 +77,16 @@ export interface AppEvent {
   toStatus?: PlanStatus;
   participantCount?: number;
   createdAt: string;
+=======
+  distanceKm: number;
+  openTime: string;
+  closeTime: string;
+  hasParkingLot: boolean;
+  fee: string;
+  requiresCertificate: boolean;
+  notes: string;
+  imageEmoji: string;
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
 }
 
 export interface Plan {

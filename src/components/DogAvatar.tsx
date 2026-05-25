@@ -1,6 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
+<<<<<<< HEAD
 import { fetchProfileByFriendCode, DogProfile } from "@/lib/storage";
+=======
+import { getProfileByFriendCode, DogProfile } from "@/lib/storage";
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
 
 interface DogAvatarProps {
     friendCode?: string;
@@ -20,6 +24,7 @@ export default function DogAvatar({ friendCode, size = "md", className = "" }: D
     const sizeClass = SIZE_MAP[size];
 
     useEffect(() => {
+<<<<<<< HEAD
         if (!friendCode) return;
         let canceled = false;
         (async () => {
@@ -40,6 +45,18 @@ export default function DogAvatar({ friendCode, size = "md", className = "" }: D
             // eslint-disable-next-line @next/next/no-img-element
             <img
                 src={profile.photoUrl}
+=======
+        if (friendCode) {
+            setProfile(getProfileByFriendCode(friendCode) || null);
+        }
+    }, [friendCode]);
+
+    if (profile?.photoDataUrl) {
+        return (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+                src={profile.photoDataUrl}
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
                 alt={profile.dogName || "dog"}
                 className={`${sizeClass} rounded-full object-cover flex-shrink-0 border-2 border-amber-100 ${className}`}
             />

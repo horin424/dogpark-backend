@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+<<<<<<< HEAD
     "firebase": "^12.12.1",
     "next": "^16.2.4",
     "react": "19.2.3",
@@ -17,6 +18,12 @@
   "overrides": {
     "postcss": ">=8.5.10"
   },
+=======
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",

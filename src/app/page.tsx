@@ -6,7 +6,11 @@ import { MOCK_PARKS } from "@/data/mockData";
 import {
   getCurrentUserId,
   getFriendIds,
+<<<<<<< HEAD
   getPlansByDate,
+=======
+  getTodayPlans,
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
   getUserById,
   updatePlan,
   addNotification,
@@ -16,21 +20,28 @@ import {
   statusLabel,
   seedDemoData,
   addMessage,
+<<<<<<< HEAD
   preloadUsers,
   preloadProfiles,
   logEvent,
   todayString,
+=======
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
 } from "@/lib/storage";
 import { Plan, Park } from "@/types";
 import EmptyState from "@/components/EmptyState";
 import { useToast } from "@/components/Toast";
 import DogAvatar from "@/components/DogAvatar";
+<<<<<<< HEAD
 import { useTodayResync } from "@/lib/hooks";
+=======
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
 
 export default function HomePage() {
   const router = useRouter();
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [friendPlans, setFriendPlans] = useState<Plan[]>([]);
+<<<<<<< HEAD
   const [plansForDate, setPlansForDate] = useState<Plan[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>(todayString());
   const [parks] = useState<Park[]>(MOCK_PARKS);
@@ -67,10 +78,29 @@ export default function HomePage() {
       setPlansForDate(dayPlans);
     } catch (err) {
       console.error("load plans for date failed", err);
+=======
+  const [parks] = useState<Park[]>(MOCK_PARKS);
+  const { showToast, ToastElement } = useToast();
+
+  const loadData = useCallback(() => {
+    seedDemoData();
+    const uid = getCurrentUserId();
+    setCurrentUserId(uid);
+    if (uid) {
+      const friendIds = getFriendIds(uid);
+      const todayPlans = getTodayPlans();
+      const fp = todayPlans.filter(
+        (p) => friendIds.includes(p.creatorId) && p.creatorId !== uid
+      );
+      setFriendPlans(fp);
+    } else {
+      setFriendPlans([]);
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
     }
   }, []);
 
   useEffect(() => {
+<<<<<<< HEAD
     loadInitial();
   }, [loadInitial]);
 
@@ -81,6 +111,12 @@ export default function HomePage() {
   useTodayResync(selectedDate, setSelectedDate);
 
   const handleJoin = async (plan: Plan) => {
+=======
+    loadData();
+  }, [loadData]);
+
+  const handleJoin = (plan: Plan, buttonLabel: string) => {
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
     if (!currentUserId) return;
     if (plan.participantIds.includes(currentUserId)) {
       showToast("すでに参加しています");
@@ -90,6 +126,7 @@ export default function HomePage() {
       ...plan,
       participantIds: [...plan.participantIds, currentUserId],
     };
+<<<<<<< HEAD
     try {
       await updatePlan(updated);
       await logEvent({
@@ -159,6 +196,45 @@ export default function HomePage() {
   const formatDateLabel = (iso: string) => {
     const d = new Date(iso + "T00:00:00");
     return `${d.getMonth() + 1}月${d.getDate()}日`;
+=======
+    updatePlan(updated);
+
+    // System message
+    const me = getUserById(currentUserId);
+    addMessage({
+      id: generateId(),
+      planId: plan.id,
+      senderId: "system",
+      text: `${me?.displayName ?? "あなた"} が参加しました！`,
+      createdAt: new Date().toISOString(),
+      isSystem: true,
+    });
+
+    // Notification to creator
+    addNotification({
+      id: generateId(),
+      userId: plan.creatorId,
+      type: "plan_join",
+      title: "参加者が増えました！",
+      body: `${me?.displayName ?? "フレンド"} が ${timeSlotLabel(plan.timeSlot)} の予定に参加しました`,
+      planId: plan.id,
+      isRead: false,
+      createdAt: new Date().toISOString(),
+    });
+
+    showToast("✅ 参加しました！");
+    // Navigate to plan detail so user goes directly to chat
+    router.push(`/plans/${plan.id}?scrollToChat=1`);
+  };
+
+  const todayPlansByPark = (parkId: string) => {
+    const all = getTodayPlans();
+    return {
+      confirmed: all.filter((p) => p.parkId === parkId && p.status === "confirmed").length,
+      tentative: all.filter((p) => p.parkId === parkId && p.status === "tentative").length,
+      anonymous: Math.floor(Math.random() * 3), // 匿名は仮データ
+    };
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
   };
 
   return (
@@ -170,11 +246,15 @@ export default function HomePage() {
         <h2 className="text-base font-bold text-gray-700 mb-3">
           📅 今日のフレンド予定
         </h2>
+<<<<<<< HEAD
         {!loaded ? (
           <div className="bg-white rounded-2xl p-5 border border-amber-100 text-center text-gray-400 text-sm">
             読み込み中…
           </div>
         ) : !currentUserId ? (
+=======
+        {!currentUserId ? (
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
           <div className="bg-white rounded-2xl p-5 border border-amber-100 text-center">
             <p className="text-gray-500 text-sm mb-3">
               ログインするとフレンドの予定が見られます
@@ -214,6 +294,7 @@ export default function HomePage() {
         )}
       </section>
 
+<<<<<<< HEAD
       {/* ドッグラン一覧 */}
       <section>
         <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
@@ -249,10 +330,18 @@ export default function HomePage() {
           {isToday ? "今日" : formatDateLabel(selectedDate)}
           の「確定 + 迷い中」参加者の合計が多い順に表示しています。
         </p>
+=======
+      {/* 近くのドッグラン */}
+      <section>
+        <h2 className="text-base font-bold text-gray-700 mb-3">
+          🗺️ 近くのドッグラン
+        </h2>
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
         {parks.length === 0 ? (
           <EmptyState emoji="🏞️" title="施設情報がありません" />
         ) : (
           <div className="flex flex-col gap-3">
+<<<<<<< HEAD
             {rankedParks.map(({ park, counts }) => (
               <ParkCard
                 key={park.id}
@@ -261,6 +350,14 @@ export default function HomePage() {
                 selectedDate={selectedDate}
               />
             ))}
+=======
+            {parks.map((park) => {
+              const counts = todayPlansByPark(park.id);
+              return (
+                <ParkCard key={park.id} park={park} counts={counts} />
+              );
+            })}
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
           </div>
         )}
       </section>
@@ -276,7 +373,11 @@ function FriendPlanCard({
 }: {
   plan: Plan;
   currentUserId: string;
+<<<<<<< HEAD
   onJoin: (plan: Plan) => void;
+=======
+  onJoin: (plan: Plan, label: string) => void;
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
 }) {
   const creator = getUserById(plan.creatorId);
   const park = MOCK_PARKS.find((p) => p.id === plan.parkId);
@@ -323,7 +424,13 @@ function FriendPlanCard({
       )}
       {!isParticipating ? (
         <button
+<<<<<<< HEAD
           onClick={() => onJoin(plan)}
+=======
+          onClick={() =>
+            onJoin(plan, isTentative ? "一緒に行くよ" : "同じ時間に行く")
+          }
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
           className={`mt-auto text-xs font-semibold px-3 py-1.5 rounded-full transition-colors ${isTentative
             ? "bg-yellow-400 text-yellow-900 hover:bg-yellow-500"
             : "bg-amber-500 text-white hover:bg-amber-600"
@@ -347,6 +454,7 @@ function FriendPlanCard({
 function ParkCard({
   park,
   counts,
+<<<<<<< HEAD
   selectedDate,
 }: {
   park: Park;
@@ -361,6 +469,14 @@ function ParkCard({
       : `/parks/${park.id}?date=${selectedDate}`;
   return (
     <Link href={href}>
+=======
+}: {
+  park: Park;
+  counts: { confirmed: number; tentative: number; anonymous: number };
+}) {
+  return (
+    <Link href={`/parks/${park.id}`}>
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
       <div className="bg-white rounded-2xl p-4 border border-amber-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow">
         <div className="w-16 h-16 flex items-center justify-center bg-amber-50 rounded-xl text-4xl flex-shrink-0">
           {park.imageEmoji}
@@ -387,7 +503,11 @@ function ParkCard({
               </span>
             )}
             {counts.confirmed === 0 && counts.tentative === 0 && counts.anonymous === 0 && (
+<<<<<<< HEAD
               <span className="text-gray-300">予定なし</span>
+=======
+              <span className="text-gray-300">今日の予定なし</span>
+>>>>>>> 16bb157cb2a9d74dca5345d0be0ea2409118efde
             )}
           </div>
         </div>
